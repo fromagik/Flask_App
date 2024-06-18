@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+
+{% block title %} Flask {% endblock %}
+
+
+{% block styles %}
+<style>
+    .card-deck {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between; /* Добавляет промежуток между карточками */
+    }
+    .card {
+        flex: 1 1 calc(20% - 10px); /* Каждая карточка занимает 25% ширины контейнера с отступом */
+        margin: 5px;
+        box-sizing: border-box; /* Учитывает padding и border в ширине и высоте элемента */
+    }
+    .container {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+</style>
+{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="card-deck mb-3 text-center">
+    {% for el in data%} 
+        <div class="card mb-4 rounded-3 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 fw-normal">{{ el.title }}</h4>
+        </div>
+        <div class="card-body">
+            <h1 class="card-title pricing-card-title">{{ el.price }}<small class="text-muted">/mo</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+                <li>10 users included</li>
+                <li>2 GB of storage</li>
+                <li>Email support</li>
+                <li>Help center access</li>
+            </ul>
+            <a href="/buy/{{ el.id }}" class="btn btn-lg btn-block btn-outline-primary">Buy</a>
+        </div>
+        </div>
+    {% endfor%}
+    </div>
+</div>
+{% endblock %}
