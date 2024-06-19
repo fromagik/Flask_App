@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -11,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = '\x87\x83S(Q\x81\xfc\x01\xa0\xd4\x9f\xd1\x11\xc1\xc8\xfd\xef\xf1\rd#\x92\xc0vo\t\xbb\xb3'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -38,7 +39,6 @@ class Services(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(100), nullable = False)
     price = db.Column(db.Integer, nullable = False)
-    isActive = db.Column(db.Boolean, default = True)
 
     def __repr__(self):
         return f'{self.title}'
@@ -84,9 +84,17 @@ def contact():
 
 @app.route('/registre', methods = ['GET', "POST"])
 def registre_user():
-    if request.method == 'POST':
-        ...
-
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hachet_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
+        user = User(username = form.username.data, email = form.email.data, password = hachet_password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    else:
+        return render_template('registre.html', form = form)
+    
 
 
 @app.route('/login', methods = ['GET', "POST"])
@@ -104,6 +112,7 @@ def login():
 
 
 @app.route('/create', methods = ['POST', 'GET'])
+@login_required
 def create():
     if request.method == 'POST':
         title = request.form['title']
@@ -117,7 +126,7 @@ def create():
         except Exception as e:
             print(str(e))
             return 'There is an error'
-
+        
     else:
         return render_template('create.html')
     
