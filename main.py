@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
@@ -6,16 +5,17 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from flask_bcrypt import bcrypt
+from flask_bcrypt import Bcrypt
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '\x87\x83S(Q\x81\xfc\x01\xa0\xd4\x9f\xd1\x11\xc1\xc8\xfd\xef\xf1\rd#\x92\xc0vo\t\xbb\xb3'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shop.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -105,7 +105,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=True)
             flash('You have been logged in!', 'success')
-            return redirect(url_for('home'))
+            return redirect('/')
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
@@ -131,8 +131,9 @@ def create():
         return render_template('create.html')
     
 @app.route('/buy/<int:id>')
+@login_required
 def buy(id):
-    return f'Felecitations {id}'
+    return f'Поздравляем, {current_user.username}!'
 
 if __name__ == '__main__':
     app.run(debug=True)

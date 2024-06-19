@@ -1,16 +1,21 @@
 {% extends 'base.html' %}
 
+{% block title %}Login{% endblock %}
 
-{% block title %} Flask {% endblock %}
-
-{% block body%}
+{% block body %}
 <div class="container">
     <h1>Login</h1>
     <form action="/login" method="POST">
-        <input type="text" class="form-control" name="username" id="username" placeholder="Username"><br>
-        <input type="password" class="form-control" name="password" id="password" placeholder="Password"><br>
-        <button type='submit' class="btn btn-success"> Login </button>
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}
+            {{ form.email(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control") }}
+        </div>
+        <button type="submit" class="btn btn-success">Login</button>
     </form>
-
 </div>
-{% endblock%}
+{% endblock %}
